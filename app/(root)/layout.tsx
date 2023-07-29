@@ -1,9 +1,8 @@
 import React from "react";
 import {auth} from "@clerk/nextjs";
 import {redirect} from "next/navigation";
-import { PrismaClient } from '@prisma/client';
+import prismadb from "@/lib/prismadb";
 
-const prisma = new PrismaClient();
 
 
 interface storeType {
@@ -20,15 +19,20 @@ export default async function SetupLayout({children}: {children: React.ReactNode
         redirect('/sign-in');
     }
     // @ts-ignore
-    const store: storeType = prisma.store.findFirst({
+    const store: storeType = await prismadb.store.findFirst({
         where: {
-            userId
+            userId: userId
         }
     });
-
+    console.debug("store", store)
     if(store) {
         redirect(`${store.id}`);
     }
 
+    return (
+        <>
+            {children}
+        </>
+    )
 
 }
